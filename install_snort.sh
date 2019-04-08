@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Tested on Ubuntu 16.04 and 18.04 server editions.
+
 # This script will attempt to install and compile snort from source
 # This script will enable active response
 # This script will create the directories and files needed for snort
@@ -77,5 +79,8 @@ if [ ! -d /etc/snort/ ]; then
     # create rule folder
     mkdir /etc/snort; mkdir /etc/snort/rules; touch snort.conf
 fi
+
+# Download default rule sets
+cd /etc/snort/rules/; apt install snort-rules-default -y
 
 echo -e "\nFinished!\n"
