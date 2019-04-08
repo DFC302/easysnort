@@ -11,14 +11,14 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
-# Place snort in /etc/ directory
-cd /etc/
-
 # make sure system is up to date
 apt-get update -y
 
 # install necessary files
 apt-get -y install flex bison build-essential libpcap-dev libnet1-dev libpcre3-dev libnetfilter-queue-dev iptables-dev libdnet libdnet-dev libdumbnet-dev zlib1g-dev
+
+# Move into tmp directory
+cd /tmp/
 
 # check if files exist already
 # if they dont, grab them
@@ -42,15 +42,12 @@ rm snort-2.9.12.tar.gz
 cd daq-2.0.6
 ./configure; make; make install
 
-# cd back to home
-cd ../
+# Place snort in /etc/ directory
+cd /etc/
 
 # cd into snort directory, make snort
 cd snort-2.9.12
 ./configure --enable-active-response -disable-open-appid; make; make install
-
-# cd back home
-cd ../
 
 # update shared library cache
 ldconfig
@@ -70,9 +67,12 @@ fi
 # Create alert file to log alerts for snort
 touch /var/log/snort/alert
 
+# cd back to /etc/ directory
+cd /etc/
+
 # if directory does not exists
 # create directory
-if [ ! -d "/etc/snort/" ]; then
+if [ ! -d /etc/snort/ ]; then
     # create snort folder    
     # create rule folder
     mkdir /etc/snort; mkdir /etc/snort/rules; touch snort.conf
