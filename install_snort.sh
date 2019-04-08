@@ -69,10 +69,10 @@ touch /var/log/snort/alert
 
 # if directory does not exists
 # create directory
-if [ ! -d "/etc/snort/" ]; then
+if [ ! -d "~/etc/snort/" ]; then
     # create snort folder    
     # create rule folder
-    mkdir /etc/snort; mkdir /etc/snort/rules; touch snort.conf
+    mkdir /root/etc/snort; mkdir /root/etc/snort/rules; touch snort.conf
 fi
 
 echo -e "\nFinished!\n"
