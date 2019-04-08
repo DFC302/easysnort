@@ -11,6 +11,9 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
+# Place snort in /etc/ directory
+cd /etc/
+
 # make sure system is up to date
 apt-get update -y
 
@@ -69,10 +72,10 @@ touch /var/log/snort/alert
 
 # if directory does not exists
 # create directory
-if [ ! -d "~/etc/snort/" ]; then
+if [ ! -d "/etc/snort/" ]; then
     # create snort folder    
     # create rule folder
-    mkdir /root/etc/snort; mkdir /root/etc/snort/rules; touch snort.conf
+    mkdir /etc/snort; mkdir /etc/snort/rules; touch snort.conf
 fi
 
 echo -e "\nFinished!\n"
