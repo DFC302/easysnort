@@ -77,10 +77,15 @@ cd /etc/
 if [ ! -d /etc/snort/ ]; then
     # create snort folder    
     # create rule folder
-    mkdir /etc/snort; mkdir /etc/snort/rules; touch snort.conf
+    mkdir /etc/snort; mkdir /etc/snort/rules
 fi
 
 # Download default rule sets
 cd /etc/snort/rules/; apt install snort-rules-default -y
+
+# Download default configuration file
+wget https://raw.githubusercontent.com/DFC302/easysnort/master/snort.conf
+
+mv snort.conf /etc/snort/
 
 echo -e "\nFinished!\n"
