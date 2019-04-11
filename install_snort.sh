@@ -92,3 +92,6 @@ clear
 snort -V
 
 echo -e "\nFinished!\n"
+
+echo -e "Snort configuration file can be found in /etc/snort/\n"
+echo -e "Alert file can be found in /var/log/snort/\n"
