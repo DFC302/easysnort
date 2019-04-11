@@ -54,9 +54,6 @@ cd snort-2.9.12
 # update shared library cache
 ldconfig
 
-# test snort
-snort -V
-
 # if directory does not exist
 # create directory
 if [ ! -d "/var/log/snort/" ]; then
@@ -87,5 +84,11 @@ cd /etc/snort/rules/; apt install snort-rules-default -y
 wget https://raw.githubusercontent.com/DFC302/easysnort/master/snort.conf
 
 mv snort.conf /etc/snort/
+
+# clear the screen
+clear
+
+# test snort
+snort -V
 
 echo -e "\nFinished!\n"
