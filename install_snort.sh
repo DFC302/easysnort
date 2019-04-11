@@ -29,7 +29,7 @@ if [ ! -f "daq-2.0.6.tar.gz" ]; then
 fi
 
 if [ ! -f "snort-2.9.12.tar.gz" ]; then
-    wget https://snort.org/downloads/snort/snort-2.9.13.tar.gz
+    wget https://snort.org/downloads/snort/snort-2.9.12.tar.gz
 fi
 
 # untar both files
