@@ -111,12 +111,12 @@ function testInstall () {
 
 	# test snort
 	if snort -V ; then
-		echo "Installation successful!\n"
+		echo -e "Installation successful!\n"
 
 		echo -e "Snort configuration file can be found in /etc/snort/\n"
 		echo -e "Alert file can be found in /var/log/snort/\n"
 	else 
-		echo "Installation failed!\n"
+		echo -e "Installation failed!\n"
 		exit 1
 	fi 
 }
