@@ -37,11 +37,11 @@ function checkDependencies() {
 
 	# untar both files
 	tar xvfz daq-2.0.6.tar.gz
-	tar xvfz snort-2.9.12.tar.gz
+	tar xvfz snort-2.9.13.tar.gz
 
 	# remove tar files
 	rm daq-2.0.6.tar.gz
-	rm snort-2.9.12.tar.gz
+	rm snort-2.9.13.tar.gz
 }
 
 function installSnort () {
@@ -53,7 +53,7 @@ function installSnort () {
 	cd /etc/
 
 	# cd into snort directory, make snort
-	cd snort-2.9.12
+	cd snort-2.9.13
 	./configure --enable-active-response -disable-open-appid; make; make install
 
 	# update shared library cache
