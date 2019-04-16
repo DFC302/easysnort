@@ -31,7 +31,7 @@ function checkDependencies() {
 	    wget https://snort.org/downloads/snort/daq-2.0.6.tar.gz
 	fi
 
-	if [ ! -f "snort-2.9.12.tar.gz" ]; then
+	if [ ! -f "snort-2.9.13.tar.gz" ]; then
 	    wget https://snort.org/downloads/snort/snort-2.9.13.tar.gz
 	fi
 
