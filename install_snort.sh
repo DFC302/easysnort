@@ -44,7 +44,7 @@ function checkDependencies() {
 	rm snort-2.9.12.tar.gz
 }
 
-function installSnort () {
+function installSnort() {
 	# cd into directory, make daq
 	cd daq-2.0.6
 	./configure; make; make install
@@ -69,7 +69,7 @@ function installSnort () {
 	fi
 }
 
-function createDir () {
+function createDir() {
 	# if directory does not exist
 	# create directory
 	if [ ! -d "/var/log/snort/" ]; then
@@ -95,7 +95,7 @@ function createDir () {
 
 }
 
-function defaults () {
+function defaults() {
 	# Download default rule sets
 	cd /etc/snort/rules/; apt install snort-rules-default -y
 
@@ -105,7 +105,7 @@ function defaults () {
 	mv snort.conf /etc/snort/
 }
 
-function testInstall () {
+function testInstall() {
 	# clear the screen
 	clear
 
@@ -121,13 +121,19 @@ function testInstall () {
 	fi 
 }
 
-function main () {
+function main() {
 	isRoot
+	echo - e "1"
 	checkDependencies
+	echo - e "2"
 	installSnort
+	echo - e "3"
 	createDir
+	echo - e "4"
 	defaults
+	echo - e "5"
 	testInstall
+	echo - e "6"
 }
 
 main
