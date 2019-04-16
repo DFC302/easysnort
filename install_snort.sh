@@ -50,7 +50,7 @@ function installSnort() {
 	./configure; make; make install
 
 	# Place snort in /etc/ directory
-	cd /etc/
+	cd /etc/ ; mv /tmp/snort-2.9.13 /etc/
 
 	# cd into snort directory, make snort
 	cd snort-2.9.13
