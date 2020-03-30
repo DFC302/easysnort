@@ -2,7 +2,9 @@
 Bash script to easily install snort from scratch.
 
 # Installation
-chmod for script, run as root.
+cd easysnort/ \
+chmod 755 install_snort.sh\
+run as root.
 
 Log files are kept in /var/log/snort
 
