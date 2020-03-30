@@ -17,10 +17,21 @@ function isRoot() {
 
 function checkDependencies() {
 	# update the system
-	apt-get update -y
+	apt-get update -y ;
 
 	# install dependencies
-	apt-get -y install flex bison build-essential libpcap-dev libnet1-dev libpcre3-dev libnetfilter-queue-dev iptables-dev libdnet libdnet-dev libdumbnet-dev zlib1g-dev
+	apt install -y flex ;
+	apt install -y bison ;
+	apt install -y build-essential ; 
+	apt install -y libpcap-dev ;
+	apt install -y libnet1-dev ;
+	apt install -y libpcre3-dev ;
+	apt install -y libnetfilter-queue-dev ; 
+	apt install -y iptables-dev ;
+	apt install -y libdnet ;
+	apt install -y libdnet-dev ;
+	apt install -y libdumbnet-dev ;
+	apt install -y zlib1g-dev ;
 
 	# Move into tmp directory
 	cd /tmp/
