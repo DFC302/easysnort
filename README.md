@@ -1,4 +1,7 @@
 # easysnort
+
+![Snort success](https://github.com/DFC302/easysnort/blob/master/images/snort.png)
+
 Bash script to easily install snort from scratch.
 
 # Installation
