@@ -28,6 +28,7 @@ function checkDependencies() {
 	apt install -y libpcre3-dev ;
 	apt install -y libnetfilter-queue-dev ; 
 	apt install -y iptables-dev ;
+	apt install -y golang-github-coreos-go-iptables-dev ;
 	apt install -y libdnet ;
 	apt install -y libdnet-dev ;
 	apt install -y libdumbnet-dev ;
@@ -39,11 +40,11 @@ function checkDependencies() {
 	# check if files exist already
 	# if they dont, grab them
 	if [ ! -f "daq-2.0.6.tar.gz" ]; then
-	    wget https://snort.org/downloads/snort/daq-2.0.6.tar.gz
+	    wget https://snort.org/downloads/snort/daq-2.0.7.tar.gz
 	fi
 
 	if [ ! -f "snort-2.9.13.tar.gz" ]; then
-	    wget https://snort.org/downloads/snort/snort-2.9.15.1.tar.gz
+	    wget https://snort.org/downloads/snort/snort-2.9.16.tar.gz
 	fi
 
 	# untar both files
