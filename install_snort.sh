@@ -39,33 +39,33 @@ function checkDependencies() {
 
 	# check if files exist already
 	# if they dont, grab them
-	if [ ! -f "daq-2.0.6.tar.gz" ]; then
+	if [ ! -f "daq-2.0.7.tar.gz" ]; then
 	    wget https://snort.org/downloads/snort/daq-2.0.7.tar.gz
 	fi
 
-	if [ ! -f "snort-2.9.13.tar.gz" ]; then
+	if [ ! -f "snort-2.9.16.tar.gz" ]; then
 	    wget https://snort.org/downloads/snort/snort-2.9.16.tar.gz
 	fi
 
 	# untar both files
-	tar xvfz daq-2.0.6.tar.gz
-	tar xvfz snort-2.9.15.1.tar.gz
+	tar xvfz daq-2.0.7.tar.gz
+	tar xvfz snort-2.9.16.tar.gz
 
 	# remove tar files
-	rm daq-2.0.6.tar.gz
-	rm snort-2.9.15.1.tar.gz
+	rm daq-2.0.7.tar.gz
+	rm snort-2.9.16.tar.gz
 }
 
 function installSnort() {
 	# cd into directory, make daq
-	cd daq-2.0.6
+	cd daq-2.0.7
 	./configure; make; make install
 
 	# Place snort in /etc/ directory
-	cd /etc/ ; mv /tmp/snort-2.9.15.1 /etc/
+	cd /etc/ ; mv /tmp/snort-2.9.16 /etc/
 
 	# cd into snort directory, make snort
-	cd snort-2.9.15.1
+	cd snort-2.9.16
 	./configure --enable-active-response -disable-open-appid; make; make install
 
 	# update shared library cache
