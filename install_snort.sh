@@ -33,6 +33,7 @@ function checkDependencies() {
 	apt install -y libdnet-dev ;
 	apt install -y libdumbnet-dev ;
 	apt install -y zlib1g-dev ;
+	apt install -y libdaq-dev ;
 
 	# Move into tmp directory
 	cd /tmp/
