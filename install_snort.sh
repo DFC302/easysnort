@@ -118,7 +118,7 @@ function defaults() {
 
 function testInstall() {
 	# clear the screen
-	clear
+	#clear
 
 	# test snort
 	if snort -V ; then
