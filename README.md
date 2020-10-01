@@ -1,4 +1,6 @@
 # easysnort
+#Introduction--
+Snort is a packet sniffer that monitors network traffic in real time, scrutinizing each packet closely to detect a dangerous payload or suspicious anomalies. Snort is based on libpcap (for library packet capture), a tool that is widely used in TCP/IP traffic sniffers and analyzers
 
 ![Snort success](https://github.com/DFC302/easysnort/blob/master/images/snort.png)
 
