@@ -10,6 +10,7 @@ Bash script to easily install snort from scratch.
 
 git clone https://github.com/DFC302/easysnort.git \
 cd easysnort/ \
+Change SNORT_VER and DAQ_VER variables to appropriate versions on snorts website here: https://www.snort.org/downloads
 chmod 755 install_snort.sh \
 run as root.
 
