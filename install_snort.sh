@@ -1,146 +1,215 @@
 #!/bin/bash
 
-# Tested on Ubuntu 16.04 and 18.04 server editions.
+# global variables
+SNORT_VER="2.9.16"
+DAQ_VER="2.0.7"
+LOG=~/easysnort.log
 
-# This script will attempt to install and compile snort from source
-# This script will enable active response
-# This script will create the directories and files needed for snort
-# to properly log and store files
-
+# if user is not root, prompt user, exit script
 function isRoot() {
-	# Please run as root
-	if [[ $EUID -ne 0 ]]; then
-    	echo -e "\nPlease run as root!\n"
-    	exit 1
+	if [[ $EUID -ne 0 ]] ; then
+		echo -e "Please run as root!\n"
+		exit 1
 	fi
+
 }
 
-function checkDependencies() {
+# Create basis for log file. Rewrite log file each time.
+function createLogFile() {
+	touch ${LOG} ;
+	OS=$(awk -F= '/^PRETTY_NAME/{print $2}' /etc/os-release) ;
+
+	echo -e "Process started at $(date)\n" > ${LOG} ;
+	echo -e "Operating System: ${OS}" >> ${LOG} ;
+	echo -e "Snort Version Number: ${SNORT_VER}" >> ${LOG} ;
+	echo -e "Daq Version Number: ${DAQ_VER}" >> ${LOG} ;
+	echo -e "Snort Configuration File: /etc/snort/" >> ${LOG} ;
+	echo -e "Alert File: /var/log/snort" >> ${LOG} ;
+	echo -e "Log File: ${LOG}" >> ${LOG} ;
+	echo -e "\n" >> ${LOG}
+
+}
+
+# Install dependencies needed to build Snort.
+# If any dependeencies do not install, send STDERR to log file
+# Dont exit script, some may fail, but are not always needed.
+# If Snort fails to install, log file can provide insight on why.
+function installDependencies() {
 	# update the system
-	apt-get update -y ;
+	echo -e "Updating System: $(date)\n" >> ${LOG} ;
+	apt update -y ;
+
 
 	# install dependencies
-	apt install -y flex ;
-	apt install -y bison ;
-	apt install -y build-essential ; 
-	apt install -y libpcap-dev ;
-	apt install -y libnet1-dev ;
-	apt install -y libpcre3-dev ;
-	apt install -y libnetfilter-queue-dev ; 
-	apt install -y iptables-dev ;
-	apt install -y golang-github-coreos-go-iptables-dev ;
-	apt install -y libdnet ;
-	apt install -y libdnet-dev ;
-	apt install -y libdumbnet-dev ;
-	apt install -y zlib1g-dev ;
-	apt install -y libdaq-dev ;
+	echo "Installing dependencies: $(date)" >> ${LOG} ;
+	echo "The following dependencies failed to install:" >> ${LOG} ;
+	apt-get install -y flex 2>> ${LOG} ;
+	apt-get install -y bison 2>> ${LOG} ;
+	apt-get install -y build-essential 2>> ${LOG} ; 
+	apt-get install -y libpcap-dev 2>> ${LOG} ;
+	apt-get install -y libnet1-dev 2>> ${LOG} ;
+	apt-get install -y libpcre3-dev 2>> ${LOG} ;
+	apt-get install -y libnetfilter-queue-dev 2>> ${LOG} ; 
+	apt-get install -y iptables-dev 2>> ${LOG} ;
+	apt-get install -y golang-github-coreos-go-iptables-dev 2>> ${LOG} ;
+	apt-get install -y libdnet 2>> ${LOG} ;
+	apt-get install -y libdnet-dev 2>> ${LOG} ;
+	apt-get install -y libdumbnet-dev 2>> ${LOG} ;
+	apt-get install -y zlib1g-dev 2>> ${LOG} ;
+	apt-get install -y libdaq-dev 2>> ${LOG} ;
 
-	# Move into tmp directory
-	cd /tmp/
+	echo -e "\nDepenedencies installed: $(date)\n" >> ${LOG}
+}
 
+function grabFiles() {
 	# check if files exist already
-	# if they dont, grab them
-	if [ ! -f "daq-2.0.7.tar.gz" ]; then
-	    wget https://snort.org/downloads/snort/daq-2.0.7.tar.gz
+	# if they do not, download them
+	if [ ! -f "daq-${DAQ_VER}.tar.gz" ]; then
+		echo "Daq file version ${DAQ_VER} not found!" >> ${LOG} ;
+		echo -e "Attempting to download daq file now: $(date)\n" >> ${LOG} ;
+	    	wget -q "https://snort.org/downloads/snort/daq-${DAQ_VER}.tar.gz" 2>> ${LOG} ;
+		
+		if [ $? -ne 0 ] ; then
+	    	    echo -e "EasySnort failed due to daq file version number ${DAQ_VER} not found on server!" >> ${LOG} ; \
+	     	    echo -e "Check for updated daq file version on snort.org and update version number." >> ${LOG} ; \
+	     	    echo "Failed at: $(date)" >> ${LOG} ;
+		    exit 1
+		fi
 	fi
 
-	if [ ! -f "snort-2.9.16.tar.gz" ]; then
-	    wget https://snort.org/downloads/snort/snort-2.9.16.tar.gz
+	if [ ! -f "snort-${SNORT_VER}.tar.gz" ]; then
+		echo "Snort file version ${SNORT_VER} not found!" >> ${LOG} ;
+		echo -e "Attempting to download snort file now: $(date)\n" >> ${LOG} ;
+	    	wget -q "https://snort.org/downloads/snort/snort-${SNORT_VER}.tar.gz" 2>> ${LOG} ;
+		
+		if [ $? -ne 0 ] ; then
+	    	    echo -e "EasySnort failed due to snort file version number ${SNORT_VER} not found on server!" >> ${LOG} ; \
+	    	    echo -e "Check for updated snort file version on snort.org and update version number." >> ${LOG} ; \
+	    	    echo "Failed at: $(date)" >> ${LOG} ; 
+		    exit 1
+		fi
 	fi
 
 	# untar both files
-	tar xvfz daq-2.0.7.tar.gz
-	tar xvfz snort-2.9.16.tar.gz
+	tar xvfz daq-${DAQ_VER}.tar.gz ;
+	tar xvfz snort-${SNORT_VER}.tar.gz ;
 
 	# remove tar files
-	rm daq-2.0.7.tar.gz
-	rm snort-2.9.16.tar.gz
+	rm daq-${DAQ_VER}.tar.gz
+	rm snort-${SNORT_VER}.tar.gz
 }
 
 function installSnort() {
-	# cd into directory, make daq
-	cd daq-2.0.7
-	./configure; make; make install
+	echo -e "\nBeginning installation of daq now: $(date)\n" >> ${LOG} ;
 
-	# Place snort in /etc/ directory
-	cd /etc/ ; mv /tmp/snort-2.9.16 /etc/
+	# make daq file
+	cd daq-${DAQ_VER} ;
 
-	# cd into snort directory, make snort
-	cd snort-2.9.16
-	./configure --enable-active-response -disable-open-appid; make; make install
+	# Incase aclocal or automake fail
+	apt-get install automake-1.15 -y;
+	#touch aclocal.m4 configure ; touch Makefile.am ; Makefile.in
+
+	./configure ; make ; make install 2>> ${LOG} || echo "Daq failed to compile! $(date)" >> ${LOG} || exit 1
+
+	echo -e "\nDaq was successfully configured: $(date)" >> ${LOG} ;
+
+	# move snort file and make snort
+	cd ../ ;
+	mv snort-${SNORT_VER} /etc/ ;
+
+	cd /etc/snort-${SNORT_VER} ;
+	
+	echo -e "\nBeginning installation of snort now: $(date)\n" >> ${LOG} ;
+
+	./configure --enable-active-response -disable-open-appid ; make ; make install 2>> ${LOG} || echo "Snort failed to compile! $(date)" >> ${LOG} || exit 1 ;
+	
+	echo -e "Snort was successfully configured: $(date)\n" >> ${LOG} ;
 
 	# update shared library cache
-	ldconfig
+	echo "Updating snort shared library cache: $(date)" >> ${LOG} ;
+	
+	sudo ldconfig -v 2>> ${LOG} || echo "Snort shared library cache failed to update!" >> ${LOG}
 
-	# if directory does not exist
-	# create directory
+	echo "Shared library cache updated: $(date)" >> ${LOG} ;
+
+	# Create log directory for snort, if directory does not exist.
 	if [ ! -d "/var/log/snort/" ]; then
+		echo "Snort log directory not found!" >> ${LOG} ;
+		echo "Creating directory now: $(date)" >> ${LOG} ;
 	    # create directory
-	    #cd /var/log/; mkdir snort
-	    mkdir /var/log/snort
+	    mkdir /var/log/snort ;
+
+	    # create log file
+	    if [ ! -f /var/log/snort/alert ] ; then
+	    	# create file
+	    	echo "Snort alert file not found!" >> ${LOG} ;
+			echo "Creating alert file now: $(date)" >> ${LOG} ;
+	    	touch /var/log/snort/alert
+	    fi
 
 	fi
-}
 
-function createDir() {
-	# if directory does not exist
-	# create directory
-	if [ ! -d "/var/log/snort/" ]; then
-	    # create directory
-	    #cd /var/log/; mkdir snort
-	    mkdir /var/log/snort
-
-	fi
-
-	# Create alert file to log alerts for snort
-	touch /var/log/snort/alert
-
-	# cd back to /etc/ directory
-	cd /etc/
-
-	# if directory does not exists
-	# create directory
 	if [ ! -d /etc/snort/ ]; then
+		echo "Snort directory not found!" >> ${LOG} ;
+		echo "Creating directory now: $(date)" >> ${LOG} ;
 	    # create snort folder    
 	    # create rule folder
-	    mkdir /etc/snort; mkdir /etc/snort/rules
+	    mkdir /etc/snort ; mkdir /etc/snort/rules
 	fi
 
 }
 
 function defaults() {
+	echo -e "\nDownloading snort default rules now: $(date)\n" >> ${LOG} ;
+	
 	# Download default rule sets
-	cd /etc/snort/rules/; apt install snort-rules-default -y
+	cd /etc/snort/rules/; 
+	apt-get install snort-rules-default -y 2>> ${LOG} ;
 
 	# Download default configuration file
-	wget https://raw.githubusercontent.com/DFC302/easysnort/master/snort.conf
+	echo "Downloading default configuration file now: $(date)" >> ${LOG} ;
+	
+	if wget https://raw.githubusercontent.com/DFC302/easysnort/master/snort.conf 2>> ${LOG} || \
+		echo "Default snort configuration file could not be downloaded at this time!" >> ${LOG} ; 
+		echo "The file can also be downloaded manually from snort.org." >> ${LOG} ; then
+			:
+	else
+		mv snort.conf /etc/snort/
 
-	mv snort.conf /etc/snort/
+	fi
 }
 
 function testInstall() {
-	# clear the screen
-	#clear
-
 	# test snort
 	if snort -V ; then
 		echo -e "Installation successful!\n"
 
 		echo -e "Snort configuration file can be found in /etc/snort/\n"
 		echo -e "Alert file can be found in /var/log/snort/\n"
+
+		echo -e "\nInstallation successful.\n" >> ${LOG};
+		echo "Process ended at $(date)" >> ${LOG}
 	else 
 		echo -e "Installation failed!\n"
+		echo -e "\nInstallation failed!" >> ${LOG} ;
+		echo "Reason: Unknown" >> ${LOG} ;
+		echo "Process ended at $(date)" >>  ${LOG} ;
 		exit 1
 	fi 
 }
 
 function main() {
+	STARTTIME=`date +%s`
 	isRoot
-	checkDependencies
+	createLogFile
+	installDependencies
+	grabFiles
 	installSnort
-	createDir
 	defaults
 	testInstall
+	ENDTIME=`date +%s`
+	RUNTIME=$((ENDTIME-STARTTIME))
+	echo -e "\nRUNTIME: $RUNTIME (seconds)" >> ${LOG}
 }
 
 main
